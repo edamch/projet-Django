@@ -1,0 +1,63 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card shadow">
+      <div class="card-header bg-danger text-white text-center">
+        <h4 class="mb-0">Inscription Établissement Hospitalier</h4>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+
+          <h6 class="text-muted mb-3">Informations de connexion</h6>
+          <div class="mb-3">
+            <label class="form-label">Nom d'utilisateur</label>
+            <input type="text" name="username" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Mot de passe</label>
+            <input type="password" name="password" class="form-control" required>
+          </div>
+
+          <hr>
+          <h6 class="text-muted mb-3">Informations de l'établissement</h6>
+
+          <div class="mb-3">
+            <label class="form-label">Nom de l'établissement</label>
+            <input type="text" name="nom" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Adresse</label>
+            <textarea name="adresse" class="form-control" rows="2" required></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Ville</label>
+              <input type="text" name="ville" class="form-control" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Téléphone</label>
+              <input type="text" name="telephone" class="form-control" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Numéro d'agrément</label>
+            <input type="text" name="agrement" class="form-control" required>
+          </div>
+
+          <button type="submit" class="btn btn-danger w-100">Envoyer la demande</button>
+        </form>
+      </div>
+      <div class="card-footer text-center">
+        Déjà inscrit ? <a href="{% url 'login' %}">Se connecter</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
