@@ -1,0 +1,44 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<h3>{{ hopital.nom }} 🏥</h3>
+
+{% if not hopital.valide %}
+  <div class="alert alert-warning">
+    ⚠️ Votre compte est en attente de validation par l'administrateur.
+  </div>
+{% endif %}
+
+<a href="{% url 'publier_demande' %}" class="btn btn-danger mb-3">+ Publier une demande urgente</a>
+
+<div class="card">
+  <div class="card-header bg-danger text-white">Mes demandes urgentes</div>
+  <div class="card-body">
+    {% if demandes %}
+      <table class="table">
+        <thead>
+          <tr><th>Groupe</th><th>Quantité</th><th>Délai</th><th>Statut</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for demande in demandes %}
+            <tr>
+              <td>{{ demande.groupe_sanguin }}</td>
+              <td>{{ demande.quantite }} poches</td>
+              <td>{{ demande.delai }}</td>
+              <td>{{ demande.statut }}</td>
+              <td>
+                {% if demande.statut == 'active' %}
+                  <a href="{% url 'cloturer_demande' demande.id %}"
+                     class="btn btn-sm btn-outline-danger">Clôturer</a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted">Aucune demande publiée.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

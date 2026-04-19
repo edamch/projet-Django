@@ -68,3 +68,6 @@ def connexion(request):
 def deconnexion(request):
     logout(request)
     return redirect('login')
+
+def accueil(request):
+    return render(request, 'accounts/accueil.html')

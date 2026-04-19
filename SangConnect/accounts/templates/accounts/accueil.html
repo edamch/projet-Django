@@ -1,0 +1,77 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<style>
+  .carte-lien {
+    text-decoration: none;
+    color: inherit;
+  }
+  .carte-lien .card {
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .carte-hopital { background-color: #f0f4f8; }
+  .carte-donneur { background-color: #f5f0f4; }
+  .carte-campagne { background-color: #f0f5f0; }
+
+  .carte-lien:hover .carte-hopital {
+    background-color: #dce8f5;
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+  }
+  .carte-lien:hover .carte-donneur {
+    background-color: #f5dce8;
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+  }
+  .carte-lien:hover .carte-campagne {
+    background-color: #dceadc;
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+  }
+</style>
+<!-- Hero Section -->
+<div class="p-5 mb-4 bg-danger text-white rounded-3 text-center">
+  <h1 class="display-4 fw-bold">🩸 BloodConnect</h1>
+  <p class="lead">Plateforme de mise en relation entre donneurs de sang et établissements hospitaliers.</p>
+  <a href="{% url 'inscription_donneur' %}" class="btn btn-light btn-lg me-2">Je veux donner</a>
+  <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Se connecter</a>
+</div>
+
+<!-- 3 cartes info -->
+<div class="row text-center">
+  <div class="col-md-4 mb-3">
+    <a href="{% url 'inscription_hopital' %}" class="carte-lien">
+      <div class="card h-100 shadow-sm carte-hopital">
+        <div class="card-body">
+          <h1>🏥</h1>
+          <h5>Hôpitaux</h5>
+          <p class="text-muted">Publiez vos demandes urgentes et organisez des campagnes de collecte.</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4 mb-3">
+    <a href="{% url 'inscription_donneur' %}" class="carte-lien">
+      <div class="card h-100 shadow-sm carte-donneur">
+        <div class="card-body">
+          <h1>💉</h1>
+          <h5>Donneurs</h5>
+          <p class="text-muted">Inscrivez-vous et répondez aux appels urgents compatibles avec votre groupe sanguin.</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4 mb-3">
+    <a href="{% url 'login' %}" class="carte-lien">
+      <div class="card h-100 shadow-sm carte-campagne">
+        <div class="card-body">
+          <h1>📅</h1>
+          <h5>Campagnes</h5>
+          <p class="text-muted">Participez aux campagnes de collecte organisées près de chez vous.</p>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

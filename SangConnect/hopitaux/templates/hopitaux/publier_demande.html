@@ -1,0 +1,41 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Publier une demande urgente</h5>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Groupe sanguin</label>
+            <select name="groupe_sanguin" class="form-select" required>
+              <option value="">-- Choisir --</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option>
+              <option>O+</option><option>O-</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Quantité (poches)</label>
+            <input type="number" name="quantite" class="form-control" min="1" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date limite</label>
+            <input type="date" name="delai" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-danger w-100">Publier</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

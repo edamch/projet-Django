@@ -1,0 +1,44 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Créer une campagne</h5>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Nom de la campagne</label>
+            <input type="text" name="nom" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" name="date" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Lieu</label>
+            <input type="text" name="lieu" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Groupes sanguins ciblés</label>
+            <input type="text" name="groupes_cibles" class="form-control"
+                   placeholder="ex: A+, O-, B+" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Capacité totale</label>
+            <input type="number" name="capacite_totale" class="form-control" min="1" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-danger w-100">Créer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

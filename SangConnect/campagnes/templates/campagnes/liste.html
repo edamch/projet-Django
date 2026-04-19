@@ -1,0 +1,29 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<h3>Campagnes de collecte 📅</h3>
+
+{% if campagnes %}
+  <div class="row">
+    {% for campagne in campagnes %}
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm">
+          <div class="card-header bg-danger text-white">
+            {{ campagne.nom }}
+          </div>
+          <div class="card-body">
+            <p>📍 {{ campagne.lieu }}</p>
+            <p>📅 {{ campagne.date }}</p>
+            <p>🩸 Groupes ciblés : {{ campagne.groupes_cibles }}</p>
+            <p>👥 Places restantes : {{ campagne.places_restantes }}</p>
+            <a href="{% url 'inscrire_campagne' campagne.id %}"
+               class="btn btn-danger btn-sm">S'inscrire</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-info">Aucune campagne disponible pour le moment.</div>
+{% endif %}
+{% endblock %}

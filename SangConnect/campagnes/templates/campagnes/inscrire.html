@@ -1,0 +1,27 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">S'inscrire à {{ campagne.nom }}</h5>
+      </div>
+      <div class="card-body">
+        <p>📍 {{ campagne.lieu }}</p>
+        <p>📅 {{ campagne.date }}</p>
+        <p>👥 Places restantes : {{ campagne.places_restantes }}</p>
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Choisir un créneau horaire</label>
+            <input type="time" name="creneau_horaire" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-danger w-100">Confirmer l'inscription</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
