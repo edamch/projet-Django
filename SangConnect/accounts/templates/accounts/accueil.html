@@ -2,76 +2,312 @@
 
 {% block content %}
 <style>
-  .carte-lien {
-    text-decoration: none;
-    color: inherit;
+  /* ── HERO ── */
+  .hero-wrap {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    padding: 5rem 3rem;
+    background: var(--surface);
   }
-  .carte-lien .card {
-    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  .hero-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 80% 40%, rgba(230,57,70,0.13) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 10% 90%, rgba(230,57,70,0.07) 0%, transparent 60%);
+    pointer-events: none;
   }
-  .carte-hopital { background-color: #f0f4f8; }
-  .carte-donneur { background-color: #f5f0f4; }
-  .carte-campagne { background-color: #f0f5f0; }
+  /* large faint cross background */
+  .hero-cross {
+    position: absolute;
+    right: 6%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12rem;
+    opacity: 0.04;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+  }
+  .hero-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1.2rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .hero-tag::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 2px;
+    background: var(--red);
+  }
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    max-width: 560px;
+    margin-bottom: 1.2rem;
+  }
+  .hero-title span { color: var(--red); }
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 460px;
+    line-height: 1.65;
+    margin-bottom: 2rem;
+  }
+  .hero-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
-  .carte-lien:hover .carte-hopital {
-    background-color: #dce8f5;
-    transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+  /* ── STATS BAR ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
   }
-  .carte-lien:hover .carte-donneur {
-    background-color: #f5dce8;
-    transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+  .stat-cell {
+    background: var(--surface);
+    padding: 20px 24px;
+    text-align: center;
   }
-  .carte-lien:hover .carte-campagne {
-    background-color: #dceadc;
-    transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    color: var(--red);
+    line-height: 1;
   }
+  .stat-lbl {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── SECTION TITLE ── */
+  .sc-section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .sc-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── ROLE CARDS ── */
+  .role-cards {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  @media(max-width:700px) { .role-cards { grid-template-columns: 1fr; } }
+  .role-card {
+    display: block;
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: border-color 0.25s, transform 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .role-card::after {
+    content: '→';
+    position: absolute;
+    right: 1.2rem;
+    bottom: 1.2rem;
+    color: var(--muted);
+    font-size: 1.2rem;
+    transition: color 0.2s, right 0.2s;
+  }
+  .role-card:hover {
+    border-color: var(--red-dim);
+    transform: translateY(-3px);
+    text-decoration: none;
+  }
+  .role-card:hover::after { color: var(--red); right: 1rem; }
+  .role-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .role-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+  .role-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── STEPS ── */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  @media(max-width:700px) { .steps-grid { grid-template-columns: 1fr 1fr; } }
+  .step-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem;
+    position: relative;
+  }
+  .step-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 2.5rem;
+    color: var(--surface2);
+    line-height: 1;
+    margin-bottom: 0.6rem;
+  }
+  .step-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+  }
+  .step-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+  /* accent bar */
+  .step-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--border);
+    border-radius: 10px 0 0 10px;
+    transition: background 0.3s;
+  }
+  .step-block:hover::before { background: var(--red); }
+
+  /* ── COMPAT TABLE ── */
+  .compat-grid {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  @media(max-width:600px) { .compat-grid { grid-template-columns: 1fr 1fr; } }
+  .compat-cell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 12px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .compat-cell:hover { border-color: var(--red-dim); }
+  .compat-grp {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--red);
+    line-height: 1;
+  }
+  .compat-info { font-size: 0.72rem; color: var(--muted); margin-top: 6px; }
 </style>
-<!-- Hero Section -->
-<div class="p-5 mb-4 bg-danger text-white rounded-3 text-center">
-  <h1 class="display-4 fw-bold">🩸 BloodConnect</h1>
-  <p class="lead">Plateforme de mise en relation entre donneurs de sang et établissements hospitaliers.</p>
-  <a href="{% url 'inscription_donneur' %}" class="btn btn-light btn-lg me-2">Je veux donner</a>
-  <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Se connecter</a>
+
+<!-- HERO -->
+<div class="hero-wrap">
+  <div class="hero-cross">✚</div>
+  <div class="hero-tag">Plateforme médicale de don de sang</div>
+  <h1 class="hero-title">Donnez le sang,<br>sauvez des <span>vies</span></h1>
+  <p class="hero-sub">
+    Connexion directe entre donneurs volontaires et établissements hospitaliers en situation d'urgence.
+  </p>
+  <div class="hero-btns">
+    <a href="{% url 'inscription_donneur' %}" class="btn-primary">Je veux donner</a>
+    <a href="{% url 'inscription_hopital' %}" class="btn-ghost">Je suis un hôpital</a>
+  </div>
 </div>
 
-<!-- 3 cartes info -->
-<div class="row text-center">
-  <div class="col-md-4 mb-3">
-    <a href="{% url 'inscription_hopital' %}" class="carte-lien">
-      <div class="card h-100 shadow-sm carte-hopital">
-        <div class="card-body">
-          <h1>🏥</h1>
-          <h5>Hôpitaux</h5>
-          <p class="text-muted">Publiez vos demandes urgentes et organisez des campagnes de collecte.</p>
-        </div>
-      </div>
-    </a>
+
+<!-- ROLE CARDS -->
+<div class="sc-section-title">Comment pouvons-nous vous aider</div>
+<div class="role-cards">
+  <a href="{% url 'inscription_hopital' %}" class="role-card">
+    <span class="role-icon">🏥</span>
+    <div class="role-name">Hôpitaux</div>
+    <p class="role-desc">Publiez des demandes urgentes et organisez des campagnes de collecte.</p>
+  </a>
+  <a href="{% url 'inscription_donneur' %}" class="role-card">
+    <span class="role-icon">💉</span>
+    <div class="role-name">Donneurs</div>
+    <p class="role-desc">Répondez aux appels urgents compatibles avec votre groupe sanguin.</p>
+  </a>
+  <a href="{% url 'login' %}" class="role-card">
+    <span class="role-icon">📅</span>
+    <div class="role-name">Campagnes</div>
+    <p class="role-desc">Participez aux collectes organisées près de chez vous.</p>
+  </a>
+</div>
+
+<!-- STEPS -->
+<div class="sc-section-title">Comment ça marche</div>
+<div class="steps-grid">
+  <div class="step-block">
+    <div class="step-num">01</div>
+    <div class="step-title">Inscrivez-vous</div>
+    <p class="step-desc">Créez votre profil avec votre groupe sanguin et votre ville.</p>
   </div>
-  <div class="col-md-4 mb-3">
-    <a href="{% url 'inscription_donneur' %}" class="carte-lien">
-      <div class="card h-100 shadow-sm carte-donneur">
-        <div class="card-body">
-          <h1>💉</h1>
-          <h5>Donneurs</h5>
-          <p class="text-muted">Inscrivez-vous et répondez aux appels urgents compatibles avec votre groupe sanguin.</p>
-        </div>
-      </div>
-    </a>
+  <div class="step-block">
+    <div class="step-num">02</div>
+    <div class="step-title">Consultez les appels</div>
+    <p class="step-desc">Voir les demandes urgentes compatibles avec votre groupe.</p>
   </div>
-  <div class="col-md-4 mb-3">
-    <a href="{% url 'login' %}" class="carte-lien">
-      <div class="card h-100 shadow-sm carte-campagne">
-        <div class="card-body">
-          <h1>📅</h1>
-          <h5>Campagnes</h5>
-          <p class="text-muted">Participez aux campagnes de collecte organisées près de chez vous.</p>
-        </div>
-      </div>
-    </a>
+  <div class="step-block">
+    <div class="step-num">03</div>
+    <div class="step-title">Répondez</div>
+    <p class="step-desc">Exprimez votre intention de donner en un clic.</p>
   </div>
+  <div class="step-block">
+    <div class="step-num">04</div>
+    <div class="step-title">Donnez</div>
+    <p class="step-desc">Rendez-vous à l'hôpital et enregistrez votre don.</p>
+  </div>
+</div>
+
+<!-- COMPATIBILITÉ -->
+<div class="sc-section-title">Compatibilité des groupes sanguins</div>
+<div class="compat-grid">
+  <div class="compat-cell"><div class="compat-grp">O−</div><div class="compat-info">Donneur universel</div></div>
+  <div class="compat-cell"><div class="compat-grp">O+</div><div class="compat-info">Donne à O+, A+, B+, AB+</div></div>
+  <div class="compat-cell"><div class="compat-grp">A+</div><div class="compat-info">Donne à A+, AB+</div></div>
+  <div class="compat-cell"><div class="compat-grp">A−</div><div class="compat-info">Donne à A+, A−, AB+, AB−</div></div>
+  <div class="compat-cell"><div class="compat-grp">B+</div><div class="compat-info">Donne à B+, AB+</div></div>
+  <div class="compat-cell"><div class="compat-grp">B−</div><div class="compat-info">Donne à B+, B−, AB+, AB−</div></div>
+  <div class="compat-cell"><div class="compat-grp">AB+</div><div class="compat-info">Receveur universel</div></div>
+  <div class="compat-cell"><div class="compat-grp">AB−</div><div class="compat-info">Donne à AB+, AB−</div></div>
 </div>
 
 {% endblock %}

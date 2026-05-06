@@ -1,30 +1,103 @@
 {% extends 'accounts/base.html' %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-5">
-    <div class="card shadow">
-      <div class="card-header bg-danger text-white text-center">
-        <h4 class="mb-0">Connexion</h4>
+<style>
+  .login-wrap {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  .login-box {
+    width: 100%;
+    max-width: 420px;
+  }
+  .login-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .login-logo-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px; height: 52px;
+    background: var(--red-glow);
+    border: 1px solid var(--red-dim);
+    border-radius: 12px;
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .login-logo-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: 0.06em;
+    color: var(--text);
+  }
+  .login-logo-sub {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+  }
+  .login-footer {
+    text-align: center;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .login-footer a {
+    color: var(--red);
+    text-decoration: none;
+  }
+  .login-footer a:hover { text-decoration: underline; }
+  .login-sep { margin: 0 0.5rem; opacity: 0.4; }
+</style>
+
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">🩸</div>
+      <div class="login-logo-title">SANGCONNECT</div>
+      <div class="login-logo-sub">Connexion à votre espace</div>
+    </div>
+
+    <div class="login-card">
+      <form method="post">
+        {% csrf_token %}
+        <div class="sc-form-group">
+          <label class="sc-label">Nom d'utilisateur</label>
+          <input type="text" name="username" class="sc-input" placeholder="Votre identifiant" required>
+        </div>
+        <div class="sc-form-group">
+          <label class="sc-label">Mot de passe</label>
+          <input type="password" name="password" class="sc-input" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; text-align:center;">
+          Se connecter
+        </button>
+      </form>
+
+      <div class="login-footer">
+        Pas encore de compte ?
+        <a href="{% url 'inscription_donneur' %}">Donneur</a>
+        <span class="login-sep">|</span>
+        <a href="{% url 'inscription_hopital' %}">Hôpital</a>
+        <div class="card-footer text-center">
+  <a href="{% url 'password_reset' %}" class="text-muted" style="font-size:13px;">
+    Mot de passe oublié ?
+  </a>
+</div>
       </div>
-      <div class="card-body">
-        <form method="post">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label">Nom d'utilisateur</label>
-            <input type="text" name="username" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Mot de passe</label>
-            <input type="password" name="password" class="form-control" required>
-          </div>
-          <button type="submit" class="btn btn-danger w-100">Se connecter</button>
-        </form>
-      </div>
-      <div class="card-footer text-center">
-        <a href="{% url 'inscription_donneur' %}">Je suis donneur</a> |
-        <a href="{% url 'inscription_hopital' %}">Je suis un hôpital</a>
-      </div>
+      
     </div>
   </div>
 </div>

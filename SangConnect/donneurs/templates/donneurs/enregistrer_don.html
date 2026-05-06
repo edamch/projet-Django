@@ -1,0 +1,39 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Enregistrer un don</h5>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Hôpital</label>
+            <select name="hopital" class="form-select" required>
+              <option value="">-- Choisir un hôpital --</option>
+              {% for hopital in hopitaux %}
+                <option value="{{ hopital.id }}">{{ hopital.nom }} — {{ hopital.ville }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date du don</label>
+            <input type="date" name="date_don" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notes (optionnel)</label>
+            <textarea name="notes" class="form-control" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-danger w-100">Enregistrer</button>
+        </form>
+      </div>
+      <div class="card-footer text-center">
+        <a href="{% url 'donneur_dashboard' %}">← Retour au tableau de bord</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

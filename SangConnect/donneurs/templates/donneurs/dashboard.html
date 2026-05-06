@@ -1,67 +1,328 @@
 {% extends 'accounts/base.html' %}
 
 {% block content %}
-<h3>Bonjour, {{ donneur.user.first_name }} 👋</h3>
+<style>
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  @media(max-width: 768px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+  }
 
-<!-- Statut éligibilité -->
-<div class="alert {% if eligible %}alert-success{% else %}alert-warning{% endif %}">
-  {% if eligible %}
-    ✅ Vous êtes éligible au don !
+  /* ── DONOR CARD ── */
+  .donor-id-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+  }
+  .donor-id-card::after {
+    content: '✚';
+    position: absolute;
+    right: -10px; bottom: -20px;
+    font-size: 8rem;
+    opacity: 0.04;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .id-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+  }
+  .blood-type {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 3.5rem;
+    color: var(--red);
+    line-height: 1;
+    text-shadow: 0 0 30px var(--red-glow);
+  }
+  .donor-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-top: 0.5rem;
+  }
+  .donor-city { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+  .id-divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 1rem 0;
+  }
+  .id-meta {
+    display: flex; gap: 1.5rem;
+  }
+  .id-meta-item { font-size: 0.78rem; color: var(--muted); }
+  .id-meta-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    margin-top: 2px;
+  }
+
+  /* ── STAT CARDS ── */
+  .stat-mini {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-mini-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.9rem;
+    line-height: 1;
+    color: var(--text);
+  }
+  .stat-mini-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+  .num-red { color: var(--red); }
+  .num-green { color: #4caf50; }
+
+  /* ── PROGRESS ── */
+  .prog-bar-track {
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .prog-bar-fill {
+    height: 100%;
+    background: var(--red);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+  }
+  .prog-bar-fill.full { background: #4caf50; }
+
+  /* ── BADGE ── */
+  .level-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 1rem;
+  }
+  .level-icon { font-size: 1.8rem; }
+  .level-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+  }
+  .level-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── DEMANDES ── */
+  .demande-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .demande-item.urgence-haute { border-left-color: var(--red); }
+  .demande-item.urgence-normale { border-left-color: #d29922; }
+  .demande-item:hover { border-color: var(--red-dim); }
+  .demande-meta { font-size: 0.8rem; color: var(--muted); }
+  .demande-desc { font-size: 0.85rem; color: var(--muted); margin: 6px 0 10px; }
+</style>
+
+<!-- HEADER -->
+<div class="d-flex justify-between align-center mb-4">
+  <div>
+    <div style="font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px;">
+      Tableau de bord — Donneur
+    </div>
+    <h1 style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:1.8rem; line-height:1;">
+      Bonjour, {{ donneur.user.get_full_name }}
+    </h1>
+  </div>
+  <a href="{% url 'enregistrer_don' %}" class="btn-primary">+ Enregistrer un don</a>
+</div>
+
+<div class="dashboard-grid">
+
+  <!-- ID CARD -->
+  <div class="donor-id-card">
+    <div class="id-tag">Carte Donneur · SangConnect</div>
+    <div class="blood-type">{{ donneur.groupe_sanguin }}</div>
+    <div class="donor-name">{{ donneur.user.get_full_name }}</div>
+    <div class="donor-city">📍 {{ donneur.ville }}</div>
+    <hr class="id-divider">
+    <div class="id-meta">
+      <div class="id-meta-item">
+        <div>Total dons</div>
+        <div class="id-meta-val">{{ dons|length }}</div>
+      </div>
+      <div class="id-meta-item">
+        <div>Sexe</div>
+        <div class="id-meta-val">{{ donneur.get_sexe_display }}</div>
+      </div>
+      <div class="id-meta-item">
+        <div>Statut</div>
+        <div class="id-meta-val">
+          {% if eligible %}<span class="badge-green">Éligible</span>{% else %}<span class="badge-yellow">Attente</span>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div>
+    <div class="grid-3 mb-3">
+      <div class="stat-mini">
+        <div class="stat-mini-num num-red">{{ dons|length }}</div>
+        <div class="stat-mini-lbl">Dons effectués</div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-mini-num" style="font-size:1.2rem;">{{ donneur.prochaine_date_don|date:"d/m" }}</div>
+        <div class="stat-mini-lbl">Prochaine date</div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-mini-num num-green">{{ demandes|length }}</div>
+        <div class="stat-mini-lbl">Appels urgents</div>
+      </div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-card-body">
+        <div class="d-flex justify-between align-center mb-2">
+          <span style="font-size:0.82rem; color:var(--muted);">Progression vers le prochain don</span>
+          {% if eligible %}
+            <span class="badge-green">Éligible maintenant !</span>
+          {% else %}
+            <span style="font-size:0.8rem; color:var(--muted);">{{ prochaine_date }}</span>
+          {% endif %}
+        </div>
+        <div class="prog-bar-track">
+          {% if eligible %}
+            <div class="prog-bar-fill full" style="width:100%;"></div>
+          {% else %}
+            <div class="prog-bar-fill" style="width:60%;"></div>
+          {% endif %}
+        </div>
+
+        <div class="level-card">
+          {% if dons|length == 0 %}
+            <span class="level-icon">🌱</span>
+            <div>
+              <div class="level-name">Nouveau donneur</div>
+              <div class="level-sub">Effectuez votre premier don</div>
+            </div>
+          {% elif dons|length < 3 %}
+            <span class="level-icon">🥉</span>
+            <div>
+              <div class="level-name" style="color:#cd7f32;">Donneur Bronze</div>
+              <div class="level-sub">{{ dons|length }} don(s) effectué(s)</div>
+            </div>
+          {% elif dons|length < 6 %}
+            <span class="level-icon">🥈</span>
+            <div>
+              <div class="level-name" style="color:#aaa;">Donneur Argent</div>
+              <div class="level-sub">{{ dons|length }} dons effectués</div>
+            </div>
+          {% else %}
+            <span class="level-icon">🥇</span>
+            <div>
+              <div class="level-name" style="color:#f0c040;">Donneur Or</div>
+              <div class="level-sub">{{ dons|length }} dons effectués</div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORIQUE -->
+<div class="sc-card mb-4">
+  <div class="sc-card-header">
+    <span class="sc-card-title">Historique des dons</span>
+    <a href="{% url 'enregistrer_don' %}" class="btn-ghost btn-sm">+ Nouveau</a>
+  </div>
+  {% if dons %}
+    <table class="sc-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Hôpital</th>
+          <th>Notes</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for don in dons %}
+          <tr>
+            <td>{{ don.date_don }}</td>
+            <td>{{ don.hopital.nom }}</td>
+            <td style="color:var(--muted);">{{ don.notes|default:"—" }}</td>
+            <td>
+              {% if don.valide %}
+                <span class="badge-green">Validé</span>
+              {% else %}
+                <span class="badge-yellow">En attente</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   {% else %}
-    ⏳ Prochaine date de don : <strong>{{ prochaine_date }}</strong>
+    <div style="text-align:center; padding:2rem; color:var(--muted); font-size:0.9rem;">
+      Aucun don enregistré pour le moment.
+    </div>
   {% endif %}
 </div>
 
-<!-- Historique des dons -->
-<div class="card mb-4">
-  <div class="card-header bg-danger text-white">Mes dons</div>
-  <div class="card-body">
-    {% if dons %}
-      <table class="table">
-        <thead>
-          <tr><th>Date</th><th>Hôpital</th><th>Statut</th></tr>
-        </thead>
-        <tbody>
-          {% for don in dons %}
-            <tr>
-              <td>{{ don.date_don }}</td>
-              <td>{{ don.hopital.nom }}</td>
-              <td>{% if don.valide %}✅ Validé{% else %}⏳ En attente{% endif %}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p class="text-muted">Aucun don enregistré.</p>
-    {% endif %}
-    <a href="{% url 'enregistrer_don' %}" class="btn btn-danger btn-sm">+ Enregistrer un don</a>
+<!-- APPELS URGENTS -->
+<div class="sc-card">
+  <div class="sc-card-header">
+    <span class="sc-card-title">Appels urgents · Groupe {{ donneur.groupe_sanguin }}</span>
   </div>
-</div>
-
-<!-- Appels urgents compatibles -->
-<div class="card">
-  <div class="card-header bg-danger text-white">Appels urgents compatibles</div>
-  <div class="card-body">
+  <div class="sc-card-body">
     {% if demandes %}
       {% for demande in demandes %}
-        <div class="border rounded p-3 mb-2">
-          <strong>{{ demande.groupe_sanguin }}</strong> —
-          {{ demande.hopital.nom }} —
-          {{ demande.quantite }} poches —
-          délai : {{ demande.delai }}
-          <p class="text-muted mb-1">{{ demande.description }}</p>
-          {% if eligible %}
-            <a href="{% url 'repondre_appel' demande.id %}" class="btn btn-sm btn-outline-danger">
-              Répondre à cet appel
-            </a>
-          {% else %}
-            <button class="btn btn-sm btn-secondary" disabled>Non éligible</button>
-          {% endif %}
+        <div class="demande-item {% if demande.quantite >= 5 %}urgence-haute{% else %}urgence-normale{% endif %}">
+          <div class="d-flex justify-between align-center mb-1">
+            <div class="d-flex align-center gap-2">
+              <span class="badge-red">{{ demande.groupe_sanguin }}</span>
+              <strong style="font-size:0.92rem;">{{ demande.hopital.nom }}</strong>
+              <span class="demande-meta">📍 {{ demande.hopital.ville }}</span>
+            </div>
+            <span class="demande-meta">Délai : {{ demande.delai }}</span>
+          </div>
+          <p class="demande-desc">{{ demande.description|default:"Aucune description." }}</p>
+          <div class="d-flex justify-between align-center">
+            <span style="font-size:0.82rem; color:var(--muted);">🩸 {{ demande.quantite }} poche(s) demandée(s)</span>
+            {% if eligible %}
+              <a href="{% url 'repondre_appel' demande.id %}" class="btn-primary btn-sm">Répondre</a>
+            {% else %}
+              <span class="badge-gray">Non éligible avant {{ prochaine_date }}</span>
+            {% endif %}
+          </div>
         </div>
       {% endfor %}
     {% else %}
-      <p class="text-muted">Aucun appel urgent compatible pour votre groupe sanguin.</p>
+      <div style="text-align:center; padding:2rem; color:var(--muted); font-size:0.9rem;">
+        Aucun appel urgent compatible pour votre groupe sanguin.
+      </div>
     {% endif %}
   </div>
 </div>
+
 {% endblock %}

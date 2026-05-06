@@ -1,0 +1,127 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<h3>🛠️ Tableau de bord Administrateur</h3>
+
+<!-- Statistiques globales -->
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card text-white bg-danger shadow-sm">
+      <div class="card-body text-center">
+        <h2>{{ total_donneurs }}</h2>
+        <p class="mb-0">Donneurs inscrits</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-white bg-secondary shadow-sm">
+      <div class="card-body text-center">
+        <h2>{{ total_dons }}</h2>
+        <p class="mb-0">Dons enregistrés</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-white bg-dark shadow-sm">
+      <div class="card-body text-center">
+        <h2>{{ total_hopitaux }}</h2>
+        <p class="mb-0">Hôpitaux inscrits</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hôpitaux en attente de validation -->
+<div class="card mb-4 shadow-sm">
+  <div class="card-header bg-warning text-dark">
+    ⚠️ Hôpitaux en attente de validation
+  </div>
+  <div class="card-body">
+    {% if hopitaux_en_attente %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Ville</th>
+            <th>Agrément</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for hopital in hopitaux_en_attente %}
+            <tr>
+              <td>{{ hopital.nom }}</td>
+              <td>{{ hopital.ville }}</td>
+              <td>{{ hopital.agrement }}</td>
+              <td>
+                <a href="{% url 'valider_hopital' hopital.id %}"
+                   class="btn btn-success btn-sm">✅ Valider</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted">Aucun hôpital en attente.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Demandes actives par groupe sanguin -->
+<div class="card mb-4 shadow-sm">
+  <div class="card-header bg-danger text-white">
+    🩸 Demandes actives par groupe sanguin
+  </div>
+  <div class="card-body">
+    <div class="row text-center">
+      {% for item in demandes_par_groupe %}
+        <div class="col-md-3 mb-2">
+          <div class="border rounded p-2">
+            <h4 class="text-danger">{{ item.groupe }}</h4>
+            <p class="mb-0">{{ item.count }} demande(s)</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4 shadow-sm">
+  <div class="card-header bg-dark text-white">
+    📍 Demandes urgentes par ville
+  </div>
+  <div class="card-body">
+    {% if demandes_par_ville %}
+      <table class="table">
+        <thead>
+          <tr><th>Ville</th><th>Nombre de demandes actives</th></tr>
+        </thead>
+        <tbody>
+          {% for item in demandes_par_ville %}
+            <tr>
+              <td>{{ item.hopital__ville }}</td>
+              <td>{{ item.total }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-muted">Aucune demande active.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Export CSV -->
+<div class="card shadow-sm">
+  <div class="card-header bg-secondary text-white">
+    📥 Export des données
+  </div>
+  <div class="card-body">
+    <p>Télécharger la liste complète des donneurs :</p>
+    <a href="{% url 'export_csv' %}" class="btn btn-secondary">
+      ⬇️ Exporter en CSV
+    </a>
+  </div>
+</div>
+
+{% endblock %}

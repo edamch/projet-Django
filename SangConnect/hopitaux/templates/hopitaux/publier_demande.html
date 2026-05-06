@@ -1,41 +1,71 @@
 {% extends 'accounts/base.html' %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6">
-    <div class="card shadow">
-      <div class="card-header bg-danger text-white">
-        <h5 class="mb-0">Publier une demande urgente</h5>
-      </div>
-      <div class="card-body">
-        <form method="post">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label">Groupe sanguin</label>
-            <select name="groupe_sanguin" class="form-select" required>
-              <option value="">-- Choisir --</option>
+<style>
+  .form-wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  .form-heading {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .form-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.8rem; }
+  .grid-2-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:500px) { .grid-2-form { grid-template-columns: 1fr; } }
+</style>
+
+<div class="form-wrap">
+  <a href="{% url 'hopital_dashboard' %}" style="font-size:0.82rem;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-bottom:1.5rem;">
+    ← Retour au tableau de bord
+  </a>
+
+  <div class="form-heading">Demande urgente</div>
+  <p class="form-sub">Publiez un appel aux donneurs compatibles avec votre besoin.</p>
+
+  <div class="sc-card">
+    <div class="sc-card-body">
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="grid-2-form mb-3">
+          <div class="sc-form-group" style="margin-bottom:0;">
+            <label class="sc-label">Groupe sanguin</label>
+            <select name="groupe_sanguin" class="sc-input" required>
+              <option value="">— Choisir —</option>
               <option>A+</option><option>A-</option>
               <option>B+</option><option>B-</option>
               <option>AB+</option><option>AB-</option>
               <option>O+</option><option>O-</option>
             </select>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Quantité (poches)</label>
-            <input type="number" name="quantite" class="form-control" min="1" required>
+          <div class="sc-form-group" style="margin-bottom:0;">
+            <label class="sc-label">Quantité (poches)</label>
+            <input type="number" name="quantite" class="sc-input" min="1" placeholder="Ex: 3" required>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Date limite</label>
-            <input type="date" name="delai" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="3"></textarea>
-          </div>
-          <button type="submit" class="btn btn-danger w-100">Publier</button>
-        </form>
-      </div>
+        </div>
+
+        <div class="sc-form-group">
+          <label class="sc-label">Date limite</label>
+          <input type="date" name="delai" class="sc-input" required>
+        </div>
+
+        <div class="sc-form-group">
+          <label class="sc-label">Description</label>
+          <textarea name="description" class="sc-input" rows="4"
+            placeholder="Précisez le contexte, l'urgence, ou toute information utile..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width:100%;text-align:center;">
+          Publier la demande
+        </button>
+      </form>
     </div>
   </div>
 </div>
+
 {% endblock %}

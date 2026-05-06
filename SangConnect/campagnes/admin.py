@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Campagne, Inscription
 
-# Register your models here.
+admin.site.register(Campagne)
+admin.site.register(Inscription)

@@ -1,44 +1,196 @@
 {% extends 'accounts/base.html' %}
 
 {% block content %}
-<h3>{{ hopital.nom }} 🏥</h3>
+<style>
+  .hopital-banner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hopital-banner::after {
+    content: '🏥';
+    position: absolute;
+    right: 1.5rem; top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+  .hopital-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .hopital-nom {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.7rem;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .hopital-info { font-size: 0.83rem; color: var(--muted); }
 
-{% if not hopital.valide %}
-  <div class="alert alert-warning">
-    ⚠️ Votre compte est en attente de validation par l'administrateur.
+  .action-card {
+    display: block;
+    text-decoration: none;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 1.4rem;
+    text-align: center;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .action-card:hover {
+    border-color: var(--red-dim);
+    transform: translateY(-3px);
+    text-decoration: none;
+  }
+  .action-icon { font-size: 2rem; display: block; margin-bottom: 0.7rem; }
+  .action-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .action-desc { font-size: 0.8rem; color: var(--muted); }
+
+  .demande-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .demande-row.active   { border-left-color: var(--red); }
+  .demande-row.satisfaite { border-left-color: #4caf50; }
+  .demande-row.cloturee { border-left-color: var(--muted); }
+  .demande-row:hover    { border-color: var(--red-dim); }
+</style>
+
+<!-- HEADER -->
+<div class="d-flex justify-between align-center mb-4">
+  <div>
+    <div style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">
+      Tableau de bord — Hôpital
+    </div>
+    <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.8rem;line-height:1;">
+      {{ hopital.nom }}
+    </h1>
   </div>
-{% endif %}
+  {% if hopital.valide %}
+    <a href="{% url 'publier_demande' %}" class="btn-primary">+ Publier une demande</a>
+  {% endif %}
+</div>
 
-<a href="{% url 'publier_demande' %}" class="btn btn-danger mb-3">+ Publier une demande urgente</a>
-
-<div class="card">
-  <div class="card-header bg-danger text-white">Mes demandes urgentes</div>
-  <div class="card-body">
-    {% if demandes %}
-      <table class="table">
-        <thead>
-          <tr><th>Groupe</th><th>Quantité</th><th>Délai</th><th>Statut</th><th>Action</th></tr>
-        </thead>
-        <tbody>
-          {% for demande in demandes %}
-            <tr>
-              <td>{{ demande.groupe_sanguin }}</td>
-              <td>{{ demande.quantite }} poches</td>
-              <td>{{ demande.delai }}</td>
-              <td>{{ demande.statut }}</td>
-              <td>
-                {% if demande.statut == 'active' %}
-                  <a href="{% url 'cloturer_demande' demande.id %}"
-                     class="btn btn-sm btn-outline-danger">Clôturer</a>
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+<!-- BANNER -->
+<div class="hopital-banner mb-4">
+  <div class="hopital-tag">Établissement hospitalier · SangConnect</div>
+  <div class="hopital-nom">{{ hopital.nom }}</div>
+  <div class="hopital-info">📍 {{ hopital.adresse }}, {{ hopital.ville }}</div>
+  <div class="hopital-info mt-1">📋 Agrément : {{ hopital.agrement }}</div>
+  <div class="mt-2">
+    {% if hopital.valide %}
+      <span class="badge-green">✓ Compte validé</span>
     {% else %}
-      <p class="text-muted">Aucune demande publiée.</p>
+      <span class="badge-yellow">⏳ En attente de validation</span>
     {% endif %}
   </div>
 </div>
+
+{% if not hopital.valide %}
+  <div class="sc-alert sc-alert-warning mb-4">
+    <span>⚠️ Votre compte n'est pas encore validé. Vous ne pouvez pas publier de demandes.</span>
+  </div>
+{% endif %}
+
+<!-- STATS -->
+<div class="grid-4 mb-4">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:2rem;color:var(--red);">{{ demandes|length }}</div>
+    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">Total demandes</div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:2rem;color:#f0c040;">
+      {% with demandes|length as n %}{{ n }}{% endwith %}
+    </div>
+    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">Demandes actives</div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:2rem;color:#4caf50;">0</div>
+    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">Dons reçus</div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:2rem;color:#388bfd;">0</div>
+    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">Campagnes actives</div>
+  </div>
+</div>
+
+<!-- ACTIONS RAPIDES -->
+<div class="sc-section-title" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.72rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem;display:flex;align-items:center;gap:0.75rem;">
+  Actions rapides
+  <span style="flex:1;height:1px;background:var(--border);display:block;"></span>
+</div>
+<div class="grid-2 mb-4">
+  <a href="{% url 'publier_demande' %}" class="action-card">
+    <span class="action-icon">🩸</span>
+    <div class="action-title">Publier une demande urgente</div>
+    <p class="action-desc">Signalez un besoin urgent en sang auprès des donneurs</p>
+  </a>
+  <a href="{% url 'creer_campagne' %}" class="action-card">
+    <span class="action-icon">📅</span>
+    <div class="action-title">Créer une campagne</div>
+    <p class="action-desc">Organisez une collecte de sang programmée</p>
+  </a>
+</div>
+
+<!-- DEMANDES -->
+<div class="sc-card">
+  <div class="sc-card-header">
+    <span class="sc-card-title">Mes demandes urgentes</span>
+    <a href="{% url 'publier_demande' %}" class="btn-ghost btn-sm">+ Nouvelle</a>
+  </div>
+  <div class="sc-card-body">
+    {% if demandes %}
+      {% for demande in demandes %}
+        <div class="demande-row {{ demande.statut }}">
+          <div class="d-flex justify-between align-center mb-1">
+            <div class="d-flex align-center gap-2">
+              <span class="badge-red">{{ demande.groupe_sanguin }}</span>
+              <strong style="font-size:0.92rem;">{{ demande.quantite }} poche(s)</strong>
+              <span style="font-size:0.8rem;color:var(--muted);">Délai : {{ demande.delai }}</span>
+            </div>
+            {% if demande.statut == 'active' %}
+              <span class="badge-red">Active</span>
+            {% elif demande.statut == 'satisfaite' %}
+              <span class="badge-green">Satisfaite</span>
+            {% else %}
+              <span class="badge-gray">Clôturée</span>
+            {% endif %}
+          </div>
+          <p style="font-size:0.83rem;color:var(--muted);margin:8px 0 10px;">
+            {{ demande.description|default:"Aucune description." }}
+          </p>
+          {% if demande.statut == 'active' %}
+            <a href="{% url 'cloturer_demande' demande.id %}" class="btn-ghost btn-sm">Clôturer</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div style="text-align:center;padding:2.5rem;color:var(--muted);font-size:0.9rem;">
+        Aucune demande publiée pour le moment.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
 {% endblock %}
